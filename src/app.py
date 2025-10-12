@@ -6,6 +6,7 @@
 from flask import Flask, request, jsonify
 import numpy as np
 import joblib
+from typing import Dict, Any
 from feature import extract_features
 
 app = Flask(__name__)
@@ -13,17 +14,20 @@ app = Flask(__name__)
 # -------------------------------
 # Load trained model
 # -------------------------------
+MODEL_PATH = "models/flight_delay_model.pkl"
+
 try:
-    model = joblib.load("models/flight_delay_model.pkl")
-except:
+    model = joblib.load(MODEL_PATH)
+    print(f"✅ Model loaded from {MODEL_PATH}")
+except FileNotFoundError:
     model = None
-    print("⚠️ Model not found! Using mock predictions for demo.")
+    print(f"⚠️ Model not found at {MODEL_PATH}. Using mock predictions for demo.")
 
 # -------------------------------
 # Home route
 # -------------------------------
-@app.route('/')
-def home():
+@app.route("/", methods=["GET"])
+def home() -> Dict[str, Any]:
     return jsonify({
         "message": "✈️ Real-Time Air Traffic Delay Prediction API is running!",
         "status": "success",
@@ -33,10 +37,10 @@ def home():
 # -------------------------------
 # Prediction route
 # -------------------------------
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.route("/predict", methods=["POST"])
+def predict() -> Dict[str, Any]:
     """
-    Input JSON:
+    Expects JSON input:
     {
         "departure_time": "14:30",
         "arrival_airport": "JFK",
@@ -47,26 +51,35 @@ def predict():
         "day_of_week": 4
     }
     """
-    data = request.get_json()
+    try:
+        data: Dict[str, Any] = request.get_json()
+        if not data:
+            raise ValueError("No JSON payload provided")
 
-    # Extract numerical features
-    features = extract_features(data)
+        # Extract features using your feature engineering function
+        features = extract_features(data)
 
-    if model:
-        prediction = model.predict([features])[0]
-    else:
-        # Mock delay prediction
-        prediction = np.random.randint(0, 60)  # fake minutes delayed
+        if model:
+            prediction = model.predict([features])[0]
+        else:
+            # Mock prediction for demo
+            prediction = np.random.randint(0, 60)
 
-    result = {
-        "predicted_delay_minutes": float(prediction),
-        "message": "Prediction successful"
-    }
+        result = {
+            "predicted_delay_minutes": float(prediction),
+            "message": "Prediction successful"
+        }
+
+    except Exception as e:
+        result = {
+            "predicted_delay_minutes": None,
+            "message": f"Prediction failed: {str(e)}"
+        }
 
     return jsonify(result)
 
 # -------------------------------
 # Run Flask app
 # -------------------------------
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=False)
