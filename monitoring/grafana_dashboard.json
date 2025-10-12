@@ -1,1 +1,72 @@
-﻿{}
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Model Accuracy Over Time",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "ml_model_accuracy",
+          "legendFormat": "accuracy",
+          "refId": "A"
+        }
+      ],
+      "lines": true
+    },
+    {
+      "type": "graph",
+      "title": "Model Loss Over Time",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "ml_model_loss",
+          "legendFormat": "loss",
+          "refId": "B"
+        }
+      ],
+      "lines": true
+    },
+    {
+      "type": "graph",
+      "title": "Predictions Per Minute",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "ml_predictions_count",
+          "legendFormat": "predictions/min",
+          "refId": "C"
+        }
+      ],
+      "lines": true
+    },
+    {
+      "type": "graph",
+      "title": "Data Ingestion Count",
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "ml_data_ingestion_count",
+          "legendFormat": "ingestion",
+          "refId": "D"
+        }
+      ],
+      "lines": true
+    }
+  ],
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": ["mlops", "monitoring"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "",
+  "title": "MLOps Monitoring Dashboard",
+  "version": 1
+}
